@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+
 part 'screens/home_screen.dart';
 part 'screens/monitoring_screen.dart';
 part 'screens/accident_alert_screen.dart';
@@ -23,20 +24,14 @@ class _RiskDriveAppState extends State<RiskDriveApp> {
   bool isDark = true;
   bool isArabic = true;
 
+  static const Color green = Color(0xFF16A36A);
+
   @override
   Widget build(BuildContext context) {
-    final bg = isDark
-        ? const Color(0xFF101827)
-        : const Color(0xFFF5F7FA);
-    final card = isDark
-        ? const Color(0xFF1D2939)
-        : Colors.white;
-    final text = isDark
-        ? const Color(0xFFF5F7FA)
-        : const Color(0xFF101827);
-    final muted = isDark
-        ? const Color(0xFF98A2B3)
-        : const Color(0xFF667085);
+    final bg = isDark ? const Color(0xFF101827) : const Color(0xFFF5F7FA);
+    final card = isDark ? const Color(0xFF1D2939) : Colors.white;
+    final text = isDark ? const Color(0xFFF5F7FA) : const Color(0xFF101827);
+    final muted = isDark ? const Color(0xFF98A2B3) : const Color(0xFF667085);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -44,10 +39,10 @@ class _RiskDriveAppState extends State<RiskDriveApp> {
       theme: ThemeData(
         brightness: isDark ? Brightness.dark : Brightness.light,
         scaffoldBackgroundColor: bg,
-        primaryColor: const Color(0xFF16A36A),
+        primaryColor: green,
         cardColor: card,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF16A36A),
+          seedColor: green,
           brightness: isDark ? Brightness.dark : Brightness.light,
         ),
         appBarTheme: AppBarTheme(
@@ -57,7 +52,7 @@ class _RiskDriveAppState extends State<RiskDriveApp> {
         ),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           backgroundColor: card,
-          selectedItemColor: const Color(0xFF16A36A),
+          selectedItemColor: green,
           unselectedItemColor: muted,
           type: BottomNavigationBarType.fixed,
         ),
@@ -65,8 +60,12 @@ class _RiskDriveAppState extends State<RiskDriveApp> {
       home: MainScreen(
         isDark: isDark,
         isArabic: isArabic,
-        onThemeChanged: (value) => setState(() => isDark = value),
-        onLanguageChanged: (value) => setState(() => isArabic = value),
+        onThemeChanged: (value) {
+          setState(() => isDark = value);
+        },
+        onLanguageChanged: (value) {
+          setState(() => isArabic = value);
+        },
       ),
     );
   }
@@ -91,34 +90,38 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  // Navigation
   int selectedIndex = 0;
+
+  // Monitoring
   bool isMonitoring = false;
+
+  // Accident Alert
   bool showAlert = false;
   int alertSeconds = 20;
   Timer? alertTimer;
 
+  // App Colors
   static const green = Color(0xFF16A36A);
   static const red = Color(0xFFF04438);
   static const orange = Color(0xFFF79009);
 
-  String tr(String ar, String en) =>
-      widget.isArabic ? ar : en;
+  // Translation
+  String tr(String ar, String en) {
+    return widget.isArabic ? ar : en;
+  }
 
-  Color get bgColor => widget.isDark
-      ? const Color(0xFF101827)
-      : const Color(0xFFF5F7FA);
+  // Theme Colors
+  Color get bgColor =>
+      widget.isDark ? const Color(0xFF101827) : const Color(0xFFF5F7FA);
 
-  Color get cardColor => widget.isDark
-      ? const Color(0xFF1D2939)
-      : Colors.white;
+  Color get cardColor => widget.isDark ? const Color(0xFF1D2939) : Colors.white;
 
-  Color get textColor => widget.isDark
-      ? const Color(0xFFF5F7FA)
-      : const Color(0xFF101827);
+  Color get textColor =>
+      widget.isDark ? const Color(0xFFF5F7FA) : const Color(0xFF101827);
 
-  Color get mutedColor => widget.isDark
-      ? const Color(0xFF98A2B3)
-      : const Color(0xFF667085);
+  Color get mutedColor =>
+      widget.isDark ? const Color(0xFF98A2B3) : const Color(0xFF667085);
 
   @override
   void dispose() {
@@ -126,6 +129,14 @@ class _MainScreenState extends State<MainScreen> {
     super.dispose();
   }
 
+  // Toggle Monitoring
+  void toggleMonitoring() {
+    setState(() {
+      isMonitoring = !isMonitoring;
+    });
+  }
+
+  // Start Accident Alert
   void startAccidentAlert() {
     alertTimer?.cancel();
 
@@ -136,16 +147,19 @@ class _MainScreenState extends State<MainScreen> {
 
     alertTimer = Timer.periodic(
       const Duration(seconds: 1),
-          (timer) {
+      (timer) {
         if (!mounted) {
           timer.cancel();
           return;
         }
 
         if (alertSeconds > 1) {
-          setState(() => alertSeconds--);
+          setState(() {
+            alertSeconds--;
+          });
         } else {
           timer.cancel();
+
           setState(() {
             alertSeconds = 0;
             showAlert = false;
@@ -156,27 +170,31 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  // Cancel Accident Alert
   void cancelAlert() {
     alertTimer?.cancel();
+
     setState(() {
       showAlert = false;
       alertSeconds = 20;
     });
   }
 
+  // Navigation
   void changeTab(int index) {
     alertTimer?.cancel();
+
     setState(() {
       selectedIndex = index;
       showAlert = false;
+      alertSeconds = 20;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection:
-      widget.isArabic ? TextDirection.rtl : TextDirection.ltr,
+      textDirection: widget.isArabic ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
         appBar: AppBar(
           title: Row(
@@ -197,9 +215,9 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ],
           ),
-          actions: [
+          actions: const [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
+              padding: EdgeInsets.symmetric(horizontal: 14),
               child: Icon(
                 Icons.shield_outlined,
                 color: green,
@@ -208,84 +226,52 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ],
         ),
+
+        // Main Body
         body: showAlert
             ? accidentAlertScreen()
             : IndexedStack(
-          index: selectedIndex,
-          children: [
-            homeScreen(),
-            monitoringScreen(),
-            historyScreen(),
-            settingsScreen(),
-            emergencyScreen(),
-          ],
-        ),
+                index: selectedIndex,
+                children: [
+                  homeScreen(),
+                  monitoringScreen(),
+                  historyScreen(),
+                  settingsScreen(),
+                  emergencyScreen(),
+                ],
+              ),
+
+        // Bottom Navigation
         bottomNavigationBar: showAlert
             ? null
             : BottomNavigationBar(
-          currentIndex: selectedIndex,
-          onTap: changeTab,
-          items: [
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.home_outlined),
-              activeIcon: const Icon(Icons.home),
-              label: tr('الرئيسية', 'Home'),
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.monitor_heart_outlined),
-              label: tr('المراقبة', 'Monitoring'),
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.history),
-              label: tr('السجل', 'History'),
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.settings_outlined),
-              label: tr('الإعدادات', 'Settings'),
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.emergency_outlined),
-              label: tr('الطوارئ', 'Emergency'),
-            ),
-          ],
-        ),
+                currentIndex: selectedIndex,
+                onTap: changeTab,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.home_outlined),
+                    activeIcon: const Icon(Icons.home),
+                    label: tr('الرئيسية', 'Home'),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.monitor_heart_outlined),
+                    label: tr('المراقبة', 'Monitoring'),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.history),
+                    label: tr('السجل', 'History'),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.settings_outlined),
+                    label: tr('الإعدادات', 'Settings'),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.emergency_outlined),
+                    label: tr('الطوارئ', 'Emergency'),
+                  ),
+                ],
+              ),
       ),
     );
   }
-
-  // HOME SCREEN
-
-  
-
-  // MONITORING SCREEN
-
-  
-
-  // ACCIDENT ALERT SCREEN
-
-  
-
-  // EMERGENCY SCREEN
-
-  
-
-  // HISTORY SCREEN
-
-  
-
-  // SETTINGS SCREEN
-
-  
-
-  // REUSABLE WIDGETS
-
-  
-
-  
-
-  
-
-  
-
-  
 }

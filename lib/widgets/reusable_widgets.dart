@@ -1,7 +1,26 @@
 ﻿part of '../main.dart';
 
-extension ReusableWidgetsExtension on _MainScreenState {
-Widget pageTitle(String title, String subtitle) {
+extension _ReusableWidgetsExtension on _MainScreenState {
+  BoxDecoration get modernCardDecoration => BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: widget.isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : const Color(0xFFE4E7EC),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(
+              alpha: widget.isDark ? 0.12 : 0.035,
+            ),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      );
+
+  Widget pageTitle(String title, String subtitle) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -9,50 +28,62 @@ Widget pageTitle(String title, String subtitle) {
           title,
           style: TextStyle(
             color: textColor,
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
+            fontSize: 26,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.5,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           subtitle,
-          style: TextStyle(color: mutedColor, fontSize: 14),
+          style: TextStyle(
+            color: mutedColor,
+            fontSize: 14,
+            height: 1.5,
+          ),
         ),
       ],
     );
   }
 
-Widget settingsSectionTitle(String title) {
+  Widget settingsSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 12, top: 4),
       child: Text(
         title,
         style: TextStyle(
           color: textColor,
           fontSize: 18,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
   }
 
-Widget infoCard(
-      IconData icon,
-      String title,
-      String value,
-      Color iconColor,
-      ) {
-    return Container(
+  Widget infoCard(
+    IconData icon,
+    String title,
+    String value,
+    Color iconColor,
+  ) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
       width: double.infinity,
-      padding: const EdgeInsets.all(17),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      padding: const EdgeInsets.all(18),
+      decoration: modernCardDecoration,
       child: Row(
         children: [
-          Icon(icon, color: iconColor, size: 27),
-          const SizedBox(width: 13),
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: iconColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Icon(icon, color: iconColor, size: 25),
+          ),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,14 +93,15 @@ Widget infoCard(
                   style: TextStyle(
                     color: mutedColor,
                     fontSize: 13,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 6),
                 Text(
                   value,
                   style: TextStyle(
                     color: textColor,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                     fontSize: 16,
                   ),
                 ),
@@ -81,75 +113,51 @@ Widget infoCard(
     );
   }
 
-Widget statusCard(
-      String title,
-      String value,
-      Color color,
-      IconData icon,
-      ) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: TextStyle(color: mutedColor)),
-                const SizedBox(height: 5),
-                Text(
-                  value,
-                  style: TextStyle(
-                    color: color,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+  Widget quickButton(
+    IconData icon,
+    String title,
+    VoidCallback onTap,
+  ) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Ink(
+          padding: const EdgeInsets.symmetric(
+            vertical: 20,
+            horizontal: 12,
           ),
-        ],
-      ),
-    );
-  }
-
-Widget quickButton(
-      IconData icon,
-      String title,
-      VoidCallback onTap,
-      ) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        padding: const EdgeInsets.all(17),
-        decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: _MainScreenState.green, size: 30),
-            const SizedBox(height: 9),
-            Text(
-              title,
-              style: TextStyle(
-                color: textColor,
-                fontWeight: FontWeight.bold,
+          decoration: modernCardDecoration,
+          child: Column(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: _MainScreenState.green.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  icon,
+                  color: _MainScreenState.green,
+                  size: 27,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: textColor,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-
 }
-
